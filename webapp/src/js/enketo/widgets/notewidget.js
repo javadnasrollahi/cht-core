@@ -36,7 +36,7 @@ define( function( require, exports, module ) {
      * @param {*=} e     event
      */
 
-    function Notewidget( element, options ) {
+    function Notewidget( element ) {
         this.namespace = pluginName;
         this.element = element;
         this._init();
@@ -111,7 +111,7 @@ define( function( require, exports, module ) {
     Notewidget.selector = '.note';
     Notewidget.condition = function() {
       return false;
-    }
+    };
 
     module.exports = Notewidget;
 } );
