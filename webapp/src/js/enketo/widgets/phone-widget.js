@@ -6,8 +6,8 @@ if ( typeof exports === 'object' && typeof exports.nodeName !== 'string' && type
 
 define( function( require, exports, module ) {
     'use strict';
-    var FormModel = require( 'enketo-core/src/js/Form-model' );
-    var Widget = require( 'enketo-core/src/js/Widget' );
+    var FormModel = require( 'enketo-core' ).FormModel;
+    var Widget = require( 'enketo-core/src/js/widget' ).default;
     var $ = require( 'jquery' );
     var phoneNumber = require('@medic/phone-number');
     require( 'enketo-core/src/js/plugins' );
@@ -60,13 +60,15 @@ define( function( require, exports, module ) {
      */
 
     function PhoneWidget( element, options, Settings ) {
+      if( element ) {
         this.namespace = pluginName;
-        Widget.call( this, element, options );
+        Object.assign( this, new Widget( element, options ) );
         if ( !Settings ) {
             var angularInjector = angular.element( document.body ).injector();
             Settings = angularInjector.get( 'Settings' );
         }
         this._init( Settings );
+      }
     }
 
     //copy the prototype functions from the Widget super class
@@ -128,9 +130,8 @@ define( function( require, exports, module ) {
         } );
     };
 
-    module.exports = {
-        'name': pluginName,
-        'selector': 'input[type="tel"]',
-        'widget': PhoneWidget
-    };
+    PhoneWidget.selector = 'input[type="tel"]';
+    PhoneWidget.condition = Widget.condition;
+
+    module.exports = PhoneWidget;
 } );

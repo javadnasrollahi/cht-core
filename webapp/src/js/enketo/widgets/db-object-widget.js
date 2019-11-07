@@ -7,12 +7,13 @@ if ( typeof exports === 'object' && typeof exports.nodeName !== 'string' && type
 define( function( require, exports, module ) {
     'use strict';
     var _ = require('underscore');
-    var Widget = require('enketo-core/src/js/Widget');
+    var Widget = require( 'enketo-core/src/js/widget' ).default;
     var $ = require('jquery');
 
     require('enketo-core/src/js/plugins');
 
     var pluginName = 'dbobjectwidget';
+    var mainSelector = '.or-appearance-db-object';
 
     /**
      * Allows drop-down selectors for db objects.
@@ -25,7 +26,7 @@ define( function( require, exports, module ) {
 
     function Dbobjectwidget( element, options ) {
         this.namespace = pluginName;
-        Widget.call( this, element, options );
+        Object.assign( this, new Widget( element, options ) );
         this._init();
     }
 
@@ -46,7 +47,7 @@ define( function( require, exports, module ) {
     function construct( element ) {
         // timeout needed to let setting the value complete before rendering
         setTimeout(function() {
-            var $question = $( element );
+            var $question = $( element ).parent( mainSelector );
 
             var Select2Search = service('Select2Search');
 
@@ -108,9 +109,8 @@ define( function( require, exports, module ) {
 
             var node = Enketo.getCurrentForm().model.node(path, index);
 
-            // Non-existant nodes still return a value, it's just an empty array
-            // Real nodes have a value, or at minimum [""]
-            if (node.getVal().length) {
+            // Non-existant nodes are undefined
+            if (typeof node.getVal() !== 'undefined') {
                 node.setVal(value);
             }
         });
@@ -167,8 +167,8 @@ define( function( require, exports, module ) {
         } );
     };
 
-    module.exports = {
-        'name': pluginName,
-        'selector': '.or-appearance-db-object',
-    };
+    Dbobjectwidget.selector = `${mainSelector} input[type=text]`;
+    Dbobjectwidget.condition = Widget.condition;
+
+    module.exports = Dbobjectwidget;
 } );

@@ -22,6 +22,7 @@ angular.module('inboxServices').service('Enketo',
     GetReportContent,
     Language,
     LineageModelGenerator,
+    Markdown,
     Search,
     ServicesActions,
     SubmitFormBySms,
@@ -238,10 +239,8 @@ angular.module('inboxServices').service('Enketo',
 
     var renderFromXmls = function(doc, selector, instanceData) {
       var wrapper = $(selector);
-      wrapper.find('.form-footer')
-             .addClass('end')
-             .find('.previous-page,.next-page')
-             .addClass('disabled');
+      wrapper.addClass('main')
+             .find('.form-footer previous-page').addClass('disabled');
 
       var formContainer = wrapper.find('.container').first();
       formContainer.html(doc.html);
@@ -252,9 +251,6 @@ angular.module('inboxServices').service('Enketo',
         if (loadErrors && loadErrors.length) {
           return $q.reject(new Error(JSON.stringify(loadErrors)));
         }
-        // TODO remove this when our enketo-core dependency is updated as the latest
-        //      version uses the language passed to the constructor
-        currentForm.langs.setAll(options.language);
         // manually translate the title as enketo-core doesn't have any way to do this
         // https://github.com/enketo/enketo-core/issues/405
         const $title = wrapper.find('#form-title');
@@ -279,14 +275,31 @@ angular.module('inboxServices').service('Enketo',
       });
     };
 
+    var setupNavButtons = function(form, $wrapper, currentIndex) {
+      var lastIndex = form.pages.$activePages.length - 1;
+      if( currentIndex === 0 ) {
+        $wrapper.find('.form-footer .previous-page').addClass('disabled');
+      } else if( currentIndex === lastIndex ) {
+        $wrapper.find('.form-footer').addClass('end')
+                .find('.next-page').addClass('disabled');
+      } else {
+        $wrapper.find('.form-footer').removeClass('end')
+                .find('.previous-page, .next-page').removeClass('disabled');
+      }
+    };
+
     var overrideNavigationButtons = function(form, $wrapper) {
       $wrapper.find('.btn.next-page')
         .off('.pagemode')
         .on('click.pagemode', function() {
-          form.pages.next()
-            .then(function(newPageIndex) {
-              if(typeof newPageIndex === 'number') {
-                $window.history.pushState({ enketo_page_number: newPageIndex }, '');
+          form.pages._next()
+            .then(function(valid) {
+              if(valid) {
+                var currentIndex = form.pages._getCurrentIndex();
+                if(typeof currentIndex === 'number') {
+                  $window.history.pushState({ enketo_page_number: currentIndex }, '');
+                }
+                setupNavButtons(form, $wrapper, currentIndex);
               }
               forceRecalculate(form);
             });
@@ -297,6 +310,7 @@ angular.module('inboxServices').service('Enketo',
         .off('.pagemode')
         .on('click.pagemode', function() {
           $window.history.back();
+          setupNavButtons(form, $wrapper, form.pages._getCurrentIndex() - 1);
           forceRecalculate(form);
           return false;
         });
@@ -329,9 +343,19 @@ angular.module('inboxServices').service('Enketo',
       }
     };
 
+    var replaceMarkup = function(doc) {
+      $('.question-label, .question > .or-hint', doc.html).each(function () {
+        $(this).html(Markdown.basic($(this).html()));
+      });
+      return doc;
+    };
+
     var renderForm = function(selector, form, instanceData, editedListener, valuechangeListener) {
       return Language().then(language => {
         return transformXml(form)
+          .then(doc => {
+            return replaceMarkup(doc);
+          })
           .then(doc => {
             replaceJavarosaMediaWithLoaders(form, doc.html);
             return renderFromXmls(doc, selector, instanceData, language);

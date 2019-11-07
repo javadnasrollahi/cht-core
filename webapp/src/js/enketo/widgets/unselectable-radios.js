@@ -21,7 +21,7 @@ if ( typeof exports === 'object' && typeof exports.nodeName !== 'string' && type
 
 define( function( require, exports, module ) {
     'use strict';
-    var Widget = require( 'enketo-core/src/js/Widget' );
+    var Widget = require( 'enketo-core/src/js/widget' ).default;
     var $ = require( 'jquery' );
     require( 'enketo-core/src/js/plugins' );
 
@@ -38,7 +38,7 @@ define( function( require, exports, module ) {
 
     function Unselectableradios( element, options ) {
         this.namespace = pluginName;
-        Widget.call( this, element, options );
+        Object.assign( this, new Widget( element, options ) );
         this._init();
     }
 
@@ -69,14 +69,14 @@ define( function( require, exports, module ) {
         } );
     };
 
-    module.exports = {
-        'name': pluginName,
-        // Enketo currently uses `data-required` instead of `required` to denote
-        // a required field.
-        //
-        // This code assumes that we never have dynamicly calculated required
-        // flags.  See https://github.com/enketo/enketo-core/issues/362 for more
-        // discussion.
-        'selector': 'input[type=radio][data-required="true()"]'
-    };
+    // Enketo currently uses `data-required` instead of `required` to denote
+    // a required field.
+    //
+    // This code assumes that we never have dynamicly calculated required
+    // flags.  See https://github.com/enketo/enketo-core/issues/362 for more
+    // discussion.
+    Unselectableradios.selector = 'input[type=radio][data-required="true()"]';
+    Unselectableradios.condition = Widget.condition;
+
+    module.exports = Unselectableradios;
 } );

@@ -21,7 +21,7 @@ if ( typeof exports === 'object' && typeof exports.nodeName !== 'string' && type
 
 define( function( require, exports, module ) {
     'use strict';
-    var Widget = require( 'enketo-core/src/js/Widget' );
+    var Widget = require( 'enketo-core/src/js/widget' ).default;
     var $ = require( 'jquery' );
     require( 'enketo-core/src/js/plugins' );
 
@@ -49,7 +49,7 @@ define( function( require, exports, module ) {
 
     function Androiddatepicker( element, options ) {
         this.namespace = pluginName;
-        Widget.call( this, element, options );
+        Object.assign( this, new Widget( element, options ) );
         this._init();
     }
 
@@ -115,8 +115,8 @@ define( function( require, exports, module ) {
         } );
     };
 
-    module.exports = {
-        'name': pluginName,
-        'selector': 'input[type=date]'
-    };
+    Androiddatepicker.selector = 'input[type=date]';
+    Androiddatepicker.condition = Widget.condition;
+
+    module.exports = Androiddatepicker;
 } );
