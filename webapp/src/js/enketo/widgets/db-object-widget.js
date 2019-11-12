@@ -48,18 +48,23 @@ define( function( require, exports, module ) {
         // timeout needed to let setting the value complete before rendering
         setTimeout(function() {
             var $question = $( element ).parent( mainSelector );
-
-            var Select2Search = service('Select2Search');
-
             var $textInput = $question.find('input');
+            var Select2Search = service('Select2Search');
 
             var value = $textInput.val();
             var disabled = $textInput.prop('readonly');
-            $textInput.replaceWith($textInput[0].outerHTML.replace(/^<input /, '<select ').replace(/<\/input>/, '</select>'));
+            var relevant = $textInput.attr('data-relevant');
+
+            $textInput.removeAttr('data-relevant');
+
+            $textInput.replaceWith($textInput[0].outerHTML
+              .replace(/^<input /, '<select ')
+              .replace(/<\/input>/, '</select>'));
             $textInput = $question.find('select');
+
             var preSelectedOption = $('<option></option>')
-                      .attr('value', value)
-                      .text(value);
+              .attr('value', value)
+              .text(value);
             $textInput.append(preSelectedOption);
 
             var dbObjectType = $textInput.attr('data-type-xml');
@@ -67,6 +72,18 @@ define( function( require, exports, module ) {
             if (!$question.hasClass('or-appearance-bind-id-only')) {
                 $textInput.on('change.dbobjectwidget', changeHandler);
             }
+
+            if ($question.hasClass('or-branch') && relevant) {
+              $question.removeClass('or-branch disabled');
+              var $section = $('<section>', {});
+              $section.addClass('or-group or-branch disabled');
+              if(relevant) {
+                $section.attr('data-relevant', relevant);
+              }
+              $question.replaceWith($section);
+              $section.append($question);
+            }
+
             Select2Search($textInput, dbObjectType, {
                 allowNew: $question.hasClass('or-appearance-allow-new')
             }).then(function() {
@@ -130,7 +147,7 @@ define( function( require, exports, module ) {
 
     /** Reverse the select2 setup steps performed in construct() */
     function deconstruct( element ) {
-        var $question = $( element );
+        var $question = $( element ).parent( mainSelector );
 
         $question.find( '.select2-container' ).remove();
 
@@ -169,6 +186,7 @@ define( function( require, exports, module ) {
 
     Dbobjectwidget.selector = `${mainSelector} input[type=text]`;
     Dbobjectwidget.condition = Widget.condition;
+    Dbobjectwidget.list = function() { return true; };
 
     module.exports = Dbobjectwidget;
 } );
