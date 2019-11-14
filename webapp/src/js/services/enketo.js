@@ -274,18 +274,20 @@ angular.module('inboxServices').service('Enketo',
     };
 
     var setupNavButtons = function(form, $wrapper, currentIndex) {
-      var lastIndex = form.pages.$activePages.length - 1;
-      var footer = $wrapper.find('.form-footer');
-      if( currentIndex >= lastIndex ) {
-        footer.addClass('end').find('.next-page').addClass('disabled');
-        if( currentIndex === 0 ) {
+      if(form.pages) {
+        var lastIndex = form.pages.$activePages.length - 1;
+        var footer = $wrapper.find('.form-footer');
+        if( currentIndex >= lastIndex ) {
+          footer.addClass('end').find('.next-page').addClass('disabled');
+          if( currentIndex === 0 ) {
+            footer.find('.previous-page').addClass('disabled');
+          }
+        } else if( currentIndex === 0 ) {
           footer.find('.previous-page').addClass('disabled');
+        } else {
+          footer.removeClass('end')
+                .find('.previous-page, .next-page').removeClass('disabled');
         }
-      } else if( currentIndex === 0 ) {
-        footer.find('.previous-page').addClass('disabled');
-      } else {
-        footer.removeClass('end')
-              .find('.previous-page, .next-page').removeClass('disabled');
       }
     };
 

@@ -45,18 +45,23 @@ define( function( require, exports, module ) {
     }
 
     function construct( element ) {
+        var $question = $( element ).parent( mainSelector );
+        var $textInput = $question.find('input');
+
+        var disabled = $textInput.prop('readonly');
+        var relevant = $textInput.attr('data-relevant');
+        var name = $textInput.attr('name');
+
+        if ( relevant ) {
+          $textInput.removeAttr('data-relevant disabled');
+          $question.attr('data-relevant', relevant);
+          $question.attr('disabled', disabled);
+          $question.attr('name', name);
+        }
+
         // timeout needed to let setting the value complete before rendering
         setTimeout(function() {
-            var $question = $( element ).parent( mainSelector );
-            var $textInput = $question.find('input');
-            var Select2Search = service('Select2Search');
-
             var value = $textInput.val();
-            var disabled = $textInput.prop('readonly');
-            var relevant = $textInput.attr('data-relevant');
-
-            $textInput.removeAttr('data-relevant');
-
             $textInput.replaceWith($textInput[0].outerHTML
               .replace(/^<input /, '<select ')
               .replace(/<\/input>/, '</select>'));
@@ -70,20 +75,10 @@ define( function( require, exports, module ) {
             var dbObjectType = $textInput.attr('data-type-xml');
 
             if (!$question.hasClass('or-appearance-bind-id-only')) {
-                $textInput.on('change.dbobjectwidget', changeHandler);
+              $textInput.on('change.dbobjectwidget', changeHandler);
             }
 
-            if ($question.hasClass('or-branch') && relevant) {
-              $question.removeClass('or-branch disabled');
-              var $section = $('<section>', {});
-              $section.addClass('or-group or-branch disabled');
-              if(relevant) {
-                $section.attr('data-relevant', relevant);
-              }
-              $question.replaceWith($section);
-              $section.append($question);
-            }
-
+            var Select2Search = service('Select2Search');
             Select2Search($textInput, dbObjectType, {
                 allowNew: $question.hasClass('or-appearance-allow-new')
             }).then(function() {
