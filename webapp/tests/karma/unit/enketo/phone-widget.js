@@ -14,7 +14,7 @@ describe('phone-widget', function() {
     // Fetch phone widget.
     var widgets = require('enketo/widgets');
     for (var i = 0; i < widgets.length; i++) {
-      if (widgets[i].name && widgets[i].name === 'PhoneWidget') {
+      if (widgets[i].selector && widgets[i].selector === 'input[type="tel"]') {
         phoneWidget = widgets[i];
         break;
       }
