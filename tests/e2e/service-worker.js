@@ -75,7 +75,7 @@ describe('Service worker cache', () => {
       '/img/icon-pregnant.svg',
       '/img/setup-wizard-demo.png',
       '/img/simprints.png',
-      '/js/inbox.js',
+      // '/js/inbox.js',?????????????????
       '/js/templates.js',
       '/login/script.js',
       '/login/style.css',
@@ -97,11 +97,11 @@ describe('Service worker cache', () => {
 
       await expectCachedState(true, '/');
       await expectCachedState(true, '/', { 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3' });
-      
+
       // no part of syncing is cached
       await expectCachedState(false, '/dbinfo', { 'Accept': 'application/json' });
       await expectCachedState(false, '/medic/_changes?style=all_docs&limit=100');
-      
+
       // confirm no additional requests were added into the cache
       const { urls: resultingCachedUrls } = await getCachedRequests();
       expect(resultingCachedUrls).to.deep.eq(initialCachedUrls);
