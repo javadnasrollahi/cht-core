@@ -109,9 +109,7 @@ define( function( require, exports, module ) {
     };
 
     Notewidget.selector = '.note';
-    Notewidget.condition = function() {
-      return false;
-    };
+    Notewidget.condition = function() { return false; };
 
     module.exports = Notewidget;
 } );

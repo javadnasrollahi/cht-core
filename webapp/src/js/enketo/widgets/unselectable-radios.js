@@ -76,7 +76,7 @@ define( function( require, exports, module ) {
     // flags.  See https://github.com/enketo/enketo-core/issues/362 for more
     // discussion.
     Unselectableradios.selector = 'input[type=radio][data-required="true()"]';
-    Unselectableradios.condition = Widget.condition;
+    Unselectableradios.condition = function() { return true; };
 
     module.exports = Unselectableradios;
 } );

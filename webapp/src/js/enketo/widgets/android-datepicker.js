@@ -116,7 +116,7 @@ define( function( require, exports, module ) {
     };
 
     Androiddatepicker.selector = 'input[type=date]';
-    Androiddatepicker.condition = Widget.condition;
+    Androiddatepicker.condition = function() { return true; };
 
     module.exports = Androiddatepicker;
 } );

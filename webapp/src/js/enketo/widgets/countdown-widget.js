@@ -78,7 +78,7 @@ define( function( require, exports, module ) {
     };
 
     Timerwidget.selector = '.or-appearance-countdown-timer input';
-    Timerwidget.condition = Widget.condition;
+    Timerwidget.condition = function() { return true; };
 
     module.exports = Timerwidget;
 } );

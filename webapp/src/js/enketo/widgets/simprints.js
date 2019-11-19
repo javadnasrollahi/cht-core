@@ -74,7 +74,7 @@ define( function( require, exports, module ) {
     };
 
     Simprintswidget.selector = '.or-appearance-simprints-reg';
-    Simprintswidget.condition = Widget.condition;
+    Simprintswidget.condition = function() { return true; };
 
     module.exports = Simprintswidget;
 } );

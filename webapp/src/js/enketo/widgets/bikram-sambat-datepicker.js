@@ -82,7 +82,7 @@ define( function( require, exports, module ) {
     };
 
     Bikramsambatdatepicker.selector = 'input[type=date]';
-    Bikramsambatdatepicker.condition = Widget.condition;
+    Bikramsambatdatepicker.condition = function() { return true; };
 
     module.exports = Bikramsambatdatepicker;
 } );

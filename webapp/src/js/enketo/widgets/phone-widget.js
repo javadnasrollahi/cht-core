@@ -131,7 +131,7 @@ define( function( require, exports, module ) {
     };
 
     PhoneWidget.selector = 'input[type="tel"]';
-    PhoneWidget.condition = Widget.condition;
+    PhoneWidget.condition = function() { return true; };
 
     module.exports = PhoneWidget;
 } );
