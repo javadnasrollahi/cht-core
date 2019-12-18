@@ -324,11 +324,8 @@ angular.module('inboxServices').service('Enketo',
         if(event.originalEvent &&
             event.originalEvent.state &&
             typeof event.originalEvent.state.enketo_page_number === 'number') {
-          var targetPage = event.originalEvent.state.enketo_page_number;
-
           if ($wrapper.find('.container').not(':empty')) {
-            var pages = form.pages;
-            pages._flipTo(pages.$activePages[targetPage], targetPage);
+            form.pages._prev();
           }
         }
       });
@@ -347,7 +344,7 @@ angular.module('inboxServices').service('Enketo',
     };
 
     var replaceMarkup = function(doc) {
-      $('.question-label, .question > .or-hint', doc.html).each(function () {
+      $('.question :not(.note) > .question-label, .question > .or-hint', doc.html).each(function () {
         $(this).html(Markdown.basic($(this).html()));
       });
       return doc;
@@ -356,9 +353,7 @@ angular.module('inboxServices').service('Enketo',
     var renderForm = function(selector, form, instanceData, editedListener, valuechangeListener) {
       return Language().then(language => {
         return transformXml(form)
-          .then(doc => {
-            return replaceMarkup(doc);
-          })
+          .then(doc => replaceMarkup(doc))
           .then(doc => {
             replaceJavarosaMediaWithLoaders(form, doc.html);
             return renderFromXmls(doc, selector, instanceData, language);
